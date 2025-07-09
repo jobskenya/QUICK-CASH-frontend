@@ -1,63 +1,50 @@
 document.addEventListener('DOMContentLoaded', () => {
-  AffiliateSystem.initUserData();
-  
   const loginForm = document.getElementById('loginForm');
-  const phoneInput = document.getElementById('phone');
   
-  // Format phone input
-  phoneInput.addEventListener('input', (e) => {
-    let value = e.target.value.replace(/\D/g, '');
-    // Ensure it starts with 7 or 1 and has max 9 digits
-    if (!/^[71]/.test(value)) {
-      value = value.substring(1);
-    }
-    if (value.length > 9) value = value.substring(0, 9);
-    e.target.value = value;
-  });
-  
-  loginForm.addEventListener('submit', (e) => {
+  loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const phone = `0${document.getElementById('phone').value.trim()}`; // Add leading 0
+    const phone = `254${document.getElementById('phone').value.trim()}`;
     const password = document.getElementById('password').value;
     const rememberMe = document.getElementById('remember-me').checked;
-    
-    // Validation
-    if (!AffiliateSystem.validatePhone(phone)) {
-      alert('Please enter a valid Kenyan phone number starting with 07 or 01 (10 digits)');
-      return;
-    }
-    
-    if (!password) {
-      alert('Please enter your password');
-      return;
-    }
-    
-    // Attempt login
-    if (AffiliateSystem.loginUser(phone, password)) {
+
+    try {
+      // Show loading state
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Logging in...';
+
+      // Call backend API
+      const user = await AffiliateSystem.loginUser({ phone, password });
+      
       // Remember phone if checked
       if (rememberMe) {
         localStorage.setItem('rememberMe', 'true');
-        localStorage.setItem('savedPhone', phone);
+        localStorage.setItem('savedPhone', phone.substring(3)); // Store without 254
       } else {
         localStorage.removeItem('rememberMe');
         localStorage.removeItem('savedPhone');
       }
+
+      // Redirect based on activation status
+      window.location.href = user.active ? 'dashboard.html' : 'activate.html';
       
-      // Redirect to dashboard
-      window.location.href = 'dashboard.html';
-    } else {
-      alert('Invalid phone number or password');
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      // Reset button state
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Login';
     }
   });
-  
-  // Check if remember me was checked last time
+
+  // Pre-fill phone if remembered
   if (localStorage.getItem('rememberMe') === 'true') {
     document.getElementById('remember-me').checked = true;
     const savedPhone = localStorage.getItem('savedPhone');
     if (savedPhone) {
-      // Remove the leading 0 for display
-      document.getElementById('phone').value = savedPhone.substring(1);
+      document.getElementById('phone').value = savedPhone;
     }
   }
 });
