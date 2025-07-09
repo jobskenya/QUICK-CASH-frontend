@@ -1,50 +1,56 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const loginForm = document.getElementById('loginForm');
+  const form = document.getElementById('loginForm');
+  const submitBtn = form.querySelector('button[type="submit"]');
   
-  loginForm.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    const phone = `254${document.getElementById('phone').value.trim()}`;
-    const password = document.getElementById('password').value;
-    const rememberMe = document.getElementById('remember-me').checked;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span> Logging in...';
 
     try {
-      // Show loading state
-      const submitBtn = loginForm.querySelector('button[type="submit"]');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Logging in...';
+      // Format phone
+      let phone = form.phone.value.trim();
+      if (phone.startsWith('0')) phone = `254${phone.substring(1)}`;
+      if (phone.startsWith('7')) phone = `254${phone}`;
 
-      // Call backend API
-      const user = await AffiliateSystem.loginUser({ phone, password });
-      
-      // Remember phone if checked
-      if (rememberMe) {
-        localStorage.setItem('rememberMe', 'true');
-        localStorage.setItem('savedPhone', phone.substring(3)); // Store without 254
-      } else {
-        localStorage.removeItem('rememberMe');
-        localStorage.removeItem('savedPhone');
+      const response = await fetch('https://affiliate-backend-v1eo.onrender.com/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          phone,
+          password: form.password.value
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle activation requirement
+        if (data.requiresActivation) {
+          localStorage.setItem('tempToken', data.tempToken); // If you implement this
+          return window.location.href = 'activate.html?returnTo=login';
+        }
+        throw new Error(data.message || 'Login failed');
       }
 
-      // Redirect based on activation status
-      window.location.href = user.active ? 'dashboard.html' : 'activate.html';
-      
+      // Store token and redirect
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      window.location.href = 'dashboard.html';
+
     } catch (error) {
-      handleApiError(error);
+      alert(`Login Error: ${error.message}`);
+      console.error('Login failed:', error);
     } finally {
-      // Reset button state
-      const submitBtn = loginForm.querySelector('button[type="submit"]');
       submitBtn.disabled = false;
       submitBtn.innerHTML = 'Login';
     }
   });
 
-  // Pre-fill phone if remembered
-  if (localStorage.getItem('rememberMe') === 'true') {
-    document.getElementById('remember-me').checked = true;
-    const savedPhone = localStorage.getItem('savedPhone');
-    if (savedPhone) {
-      document.getElementById('phone').value = savedPhone;
-    }
-  }
+  // Phone input formatting
+  form.querySelector('#phone').addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 9);
+  });
 });
