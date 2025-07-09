@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-50 dark:bg-gray-900">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Earn Online</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="./assets/css/style.css" rel="stylesheet">
+  <link href="./assets/css/animate.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <div class="min-h-screen pb-16">
+    <!-- Header -->
+    <header class="bg-blue-600 dark:bg-blue-700 text-white p-4 shadow-md">
+      <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-xl font-bold">Earn Online</h1>
+        <div class="flex items-center space-x-4">
+          <button id="darkModeToggle" class="text-white">
+            <i class="fas fa-moon dark:hidden"></i>
+            <i class="fas fa-sun hidden dark:inline"></i>
+          </button>
+          <div id="userAvatar" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold cursor-pointer"></div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Profile Section -->
+    <div class="container mx-auto p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex items-center space-x-4 animate__animated animate__fadeIn">
+        <div id="profileAvatar" class="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-2xl font-bold text-blue-600 dark:text-blue-300"></div>
+        <div>
+          <h2 id="userName" class="text-lg font-semibold text-gray-800 dark:text-white"></h2>
+          <p id="userGender" class="text-sm text-gray-600 dark:text-gray-300"></p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Balance Cards -->
+    <div class="container mx-auto p-4 grid grid-cols-2 gap-4">
+      <div class="bg-green-100 dark:bg-green-900 rounded-lg shadow p-4 animate__animated animate__fadeInUp">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-sm text-green-800 dark:text-green-200">Total Balance</p>
+            <h3 id="totalBalance" class="text-xl font-bold text-green-600 dark:text-green-300">Ksh 0</h3>
+          </div>
+          <i class="fas fa-wallet text-green-500 text-2xl"></i>
+        </div>
+      </div>
+      
+      <div class="bg-blue-100 dark:bg-blue-900 rounded-lg shadow p-4 animate__animated animate__fadeInUp animate__delay-1s">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-sm text-blue-800 dark:text-blue-200">Deposit Balance</p>
+            <h3 id="depositBalance" class="text-xl font-bold text-blue-600 dark:text-blue-300">Ksh 0</h3>
+          </div>
+          <i class="fas fa-money-bill-wave text-blue-500 text-2xl"></i>
+        </div>
+      </div>
+      
+      <div class="bg-purple-100 dark:bg-purple-900 rounded-lg shadow p-4 animate__animated animate__fadeInUp animate__delay-2s">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-sm text-purple-800 dark:text-purple-200">Withdrawn</p>
+            <h3 id="withdrawnBalance" class="text-xl font-bold text-purple-600 dark:text-purple-300">Ksh 0</h3>
+          </div>
+          <i class="fas fa-hand-holding-usd text-purple-500 text-2xl"></i>
+        </div>
+      </div>
+      
+      <div class="bg-yellow-100 dark:bg-yellow-900 rounded-lg shadow p-4 animate__animated animate__fadeInUp animate__delay-3s">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-sm text-yellow-800 dark:text-yellow-200">Invite Earnings</p>
+            <h3 id="inviteBalance" class="text-xl font-bold text-yellow-600 dark:text-yellow-300">Ksh 0</h3>
+          </div>
+          <i class="fas fa-users text-yellow-500 text-2xl"></i>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Progress Bar -->
+    <div class="container mx-auto p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+        <div class="flex justify-between mb-2">
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Withdrawal Progress</span>
+          <span id="progressText" class="text-sm font-medium text-blue-600 dark:text-blue-400">Ksh 0 / 5,000</span>
+        </div>
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+          <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+        </div>
+        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Reach Ksh 5,000 to withdraw your earnings</p>
+      </div>
+    </div>
+    
+    <!-- Withdraw Button -->
+    <div class="container mx-auto p-4">
+      <button id="withdrawBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition duration-300 flex items-center justify-center space-x-2">
+        <i class="fas fa-money-bill-transfer"></i>
+        <span>Withdraw Earnings</span>
+      </button>
+    </div>
+    
+    <!-- Transactions -->
+    <div class="container mx-auto p-4">
+      <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-3">Recent Transactions</h3>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Time</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="transactionsList" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <!-- Transactions will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700 flex justify-around items-center p-2">
+    <a href="dashboard.html" class="flex flex-col items-center text-blue-600 dark:text-blue-400">
+      <i class="fas fa-home text-xl"></i>
+      <span class="text-xs mt-1">Home</span>
+    </a>
+    <a href="market.html" class="flex flex-col items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+      <i class="fas fa-store text-xl"></i>
+      <span class="text-xs mt-1">Market</span>
+    </a>
+    <a href="transactions.html" class="flex flex-col items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+      <i class="fas fa-history text-xl"></i>
+      <span class="text-xs mt-1">Transactions</span>
+    </a>
+    <a href="withdraw.html" class="flex flex-col items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+      <i class="fas fa-wallet text-xl"></i>
+      <span class="text-xs mt-1">Withdraw</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+      <i class="fas fa-user text-xl"></i>
+      <span class="text-xs mt-1">Profile</span>
+    </a>
+  </nav>
+  
+  <!-- Withdrawal Modal -->
+  <div id="withdrawalModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Withdrawal Requirements</h3>
+        <button id="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="mb-4">
+        <p class="text-gray-600 dark:text-gray-300">You need to reach a minimum balance of Ksh 5,000 to withdraw your earnings.</p>
+        <div class="mt-4 bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+          <p class="text-sm text-gray-700 dark:text-gray-300"><span id="currentBalanceModal">Ksh 0</span> / Ksh 5,000</p>
+          <div class="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-2 mt-2">
+            <div id="modalProgressBar" class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center">
+        <button id="inviteFriendsBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+          <i class="fas fa-user-plus mr-2"></i>Invite Friends
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./assets/js/utils.js"></script>
+  <script src="./assets/js/darkmode.js"></script>
+  <script src="./assets/js/confetti.js"></script>
+  <script src="./assets/js/dashboard.js"></script>
+</body>
+</html>

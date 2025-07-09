@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-50 dark:bg-gray-900">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activate Your Account</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="./assets/css/style.css" rel="stylesheet">
+  <link href="./assets/css/animate.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden animate__animated animate__fadeIn">
+    <div class="bg-green-600 dark:bg-green-700 p-6 text-center">
+      <h1 class="text-2xl font-bold text-white">Activate Your Account</h1>
+      <p class="text-green-100 mt-2">One step away from earning money</p>
+    </div>
+    
+    <div class="p-6 space-y-6">
+      <div class="text-center">
+        <i class="fas fa-mobile-alt text-5xl text-blue-500 mb-4"></i>
+        <p class="text-gray-700 dark:text-gray-300">Pay Ksh 100 via M-Pesa to activate and start earning</p>
+      </div>
+      
+      <div class="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-md border border-yellow-200 dark:border-yellow-700">
+        <h3 class="font-medium text-yellow-800 dark:text-yellow-200">M-Pesa Payment Instructions</h3>
+        <ol class="mt-2 text-sm text-yellow-700 dark:text-yellow-300 list-decimal list-inside space-y-1">
+          <li>Go to M-Pesa menu</li>
+          <li>Select Lipa na M-Pesa</li>
+          <li>Select Pay Bill</li>
+          <li>Enter Business No: 123456</li>
+          <li>Enter Account No: Your Phone Number</li>
+          <li>Enter Amount: 100</li>
+          <li>Enter your M-Pesa PIN</li>
+        </ol>
+      </div>
+      
+      <button id="activateBtn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 animate__animated animate__pulse animate__infinite">
+        <i class="fas fa-check-circle mr-2"></i> Simulate Payment
+      </button>
+      
+      <div class="text-center text-sm text-gray-500 dark:text-gray-400">
+        <p>Already paid? <a href="#" id="checkPayment" class="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">Check payment status</a></p>
+      </div>
+    </div>
+    
+    <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 text-center">
+      <button id="darkModeToggle" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+        <i class="fas fa-moon dark:hidden"></i>
+        <i class="fas fa-sun hidden dark:inline"></i>
+      </button>
+    </div>
+  </div>
+
+  <script src="./assets/js/utils.js"></script>
+  <script src="./assets/js/darkmode.js"></script>
+  <script src="./assets/js/activate.js"></script>
+</body>
+</html>
