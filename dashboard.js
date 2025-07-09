@@ -1,47 +1,45 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const user = AffiliateSystem.getCurrentUser();
-  
-  // Redirect if not logged in or not active
-  if (!user) {
-    window.location.href = 'register.html';
-    return;
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    // Check authentication
+    const user = await AffiliateSystem.getCurrentUser();
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+    if (!user.active) {
+      window.location.href = 'activate.html';
+      return;
+    }
+
+    // Load user data
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userGender').textContent = user.gender === 'male' ? 'Male' : 'Female';
+    
+    // Set avatar initials
+    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('profileAvatar').textContent = initials;
+
+    // Load data
+    await updateBalances();
+    await loadTransactions();
+
+    // Set up event listeners
+    document.getElementById('withdrawBtn').addEventListener('click', handleWithdraw);
+    document.getElementById('closeModal').addEventListener('click', () => {
+      document.getElementById('withdrawalModal').classList.add('hidden');
+    });
+    document.getElementById('inviteFriendsBtn').addEventListener('click', () => {
+      window.location.href = 'market.html';
+    });
+
+  } catch (error) {
+    handleApiError(error);
   }
-  
-  if (!user.active) {
-    window.location.href = 'activate.html';
-    return;
-  }
-  
-  // Load user data
-  document.getElementById('userName').textContent = user.name;
-  document.getElementById('userGender').textContent = user.gender === 'male' ? 'Male' : 'Female';
-  
-  // Set avatar initials
-  const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
-  document.getElementById('userAvatar').textContent = initials;
-  document.getElementById('profileAvatar').textContent = initials;
-  
-  // Load balances
-  updateBalances();
-  
-  // Load transactions
-  loadTransactions();
-  
-  // Withdraw button
-  document.getElementById('withdrawBtn').addEventListener('click', handleWithdraw);
-  
-  // Modal buttons
-  document.getElementById('closeModal').addEventListener('click', () => {
-    document.getElementById('withdrawalModal').classList.add('hidden');
-  });
-  
-  document.getElementById('inviteFriendsBtn').addEventListener('click', () => {
-    window.location.href = 'market.html';
-  });
 });
 
-function updateBalances() {
-  const balance = AffiliateSystem.getUserBalance();
+async function updateBalances() {
+  const balance = await AffiliateSystem.getBalance();
   
   document.getElementById('totalBalance').textContent = formatCurrency(balance.total);
   document.getElementById('depositBalance').textContent = formatCurrency(balance.deposit);
@@ -52,15 +50,10 @@ function updateBalances() {
   const progress = Math.min((balance.total / 5000) * 100, 100);
   document.getElementById('progressBar').style.width = `${progress}%`;
   document.getElementById('progressText').textContent = `${formatCurrency(balance.total)} / ${formatCurrency(5000)}`;
-  
-  // Check for confetti celebration
-  if (balance.total >= 5000) {
-    triggerConfetti();
-  }
 }
 
-function loadTransactions() {
-  const transactions = AffiliateSystem.getTransactions().slice(0, 5); // Get last 5 transactions
+async function loadTransactions() {
+  const transactions = await AffiliateSystem.getTransactions();
   const tbody = document.getElementById('transactionsList');
   tbody.innerHTML = '';
   
@@ -69,7 +62,7 @@ function loadTransactions() {
     return;
   }
   
-  transactions.forEach(txn => {
+  transactions.slice(0, 5).forEach(txn => {
     const row = document.createElement('tr');
     row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
     
@@ -87,25 +80,20 @@ function loadTransactions() {
   });
 }
 
-function handleWithdraw() {
-  const balance = AffiliateSystem.getUserBalance();
-  
-  if (balance.total < 5000) {
-    // Show modal
-    document.getElementById('currentBalanceModal').textContent = formatCurrency(balance.total);
-    document.getElementById('modalProgressBar').style.width = `${(balance.total / 5000) * 100}%`;
-    document.getElementById('withdrawalModal').classList.remove('hidden');
-  } else {
-    // Open WhatsApp for withdrawal
-    const user = AffiliateSystem.getCurrentUser();
-    const message = `Please allow my withdrawal of ${formatCurrency(balance.total)} for user ${user.name}`;
-    const encodedMessage = encodeURIComponent(message);
-    window.open(`https://api.whatsapp.com/send?phone=+254104718105&text=${encodedMessage}`, '_blank');
+async function handleWithdraw() {
+  try {
+    const balance = await AffiliateSystem.getBalance();
+    
+    if (balance.total < 5000) {
+      // Show modal
+      document.getElementById('currentBalanceModal').textContent = formatCurrency(balance.total);
+      document.getElementById('modalProgressBar').style.width = `${(balance.total / 5000) * 100}%`;
+      document.getElementById('withdrawalModal').classList.remove('hidden');
+    } else {
+      // In a real app, this would call your backend's withdrawal endpoint
+      alert('Withdrawal request submitted! This would call your backend in production.');
+    }
+  } catch (error) {
+    handleApiError(error);
   }
-}
-
-function triggerConfetti() {
-  // Confetti animation will be triggered from confetti.js
-  startConfetti();
-  setTimeout(stopConfetti, 5000);
 }
