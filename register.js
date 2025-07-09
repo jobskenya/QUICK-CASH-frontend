@@ -1,63 +1,35 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('registerForm');
-  const submitBtn = form.querySelector('button[type="submit"]');
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
   
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner"></span> Registering...';
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner">Loading...</span>';
 
-    try {
-      // Format phone (ensure Kenyan number)
-      let phone = form.phone.value.trim();
-      if (phone.startsWith('0')) phone = `254${phone.substring(1)}`;
-      if (phone.startsWith('7')) phone = `254${phone}`;
+  try {
+    const phone = `254${e.target.phone.value.replace(/^0/, '')}`;
+    const response = await fetch('https://your-render-url.onrender.com/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: e.target.name.value,
+        phone,
+        password: e.target.password.value,
+        gender: e.target.gender.value
+      })
+    });
 
-      const response = await fetch('https://affiliate-backend-v1eo.onrender.com/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: form.name.value.trim(),
-          phone,
-          gender: form.gender.value,
-          password: form.password.value,
-          referralCode: form.referralCode.value.trim() || undefined
-        })
-      });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message);
 
-      const data = await response.json();
+    // Save token and redirect
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    window.location.href = data.nextStep === 'activation' ? 'activate.html' : 'dashboard.html';
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-
-      // Store token and redirect to activation
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
-      if (data.nextStep === 'activation') {
-        window.location.href = 'activate.html';
-      } else {
-        window.location.href = 'dashboard.html';
-      }
-
-    } catch (error) {
-      alert(`Registration Error: ${error.message}`);
-      console.error('Registration failed:', error);
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = 'Register';
-    }
-  });
-
-  // Phone number formatting
-  const phoneInput = form.querySelector('#phone');
-  phoneInput.addEventListener('input', (e) => {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.startsWith('254')) value = value.substring(3);
-    if (value.length > 9) value = value.substring(0, 9);
-    e.target.value = value;
-  });
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Register';
+  }
 });
